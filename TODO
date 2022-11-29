@@ -1,0 +1,5 @@
+- Put on hightower
+- better logging (i.e. save logs to a file based on date [folder per day containing logs.txt])
+- add admin restart command if the bot is working correctly (restart docker instance)
+- add ping command
+- add help command
