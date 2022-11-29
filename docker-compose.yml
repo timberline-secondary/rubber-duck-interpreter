@@ -1,0 +1,9 @@
+version: "3.3"
+services:
+  bot:
+    env_file:
+      - .env
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: sh -c "python -m pip install -r requirements.txt && python main.py"
