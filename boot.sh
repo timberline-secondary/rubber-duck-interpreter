@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo -e "\n### REMOVING DANGLING IMAGES ###\n"
 docker rmi --force $(docker images -f "dangling=true" -q)
 echo -e "\n### REMOVING EXITED CONTAINERS ###\n"
