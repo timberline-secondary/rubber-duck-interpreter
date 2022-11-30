@@ -7,3 +7,6 @@ docker rm $(docker ps -a -f status=exited -f status=created -q)
 # force recreate
 docker-compose build --no-cache
 docker-compose up --remove-orphans
+
+# (will be exited at this point, restart it)
+docker container restart $(hostname)
