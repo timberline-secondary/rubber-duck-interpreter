@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# cleanup
+docker rmi --force $(docker images -f "dangling=true" -q)
+docker rm $(docker ps -a -f status=exited -f status=created -q)
+
+# force recreate
+docker-compose build --no-cache
+docker-compose up --remove-orphans
