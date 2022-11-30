@@ -1,6 +1,6 @@
 # editors
-*/**/.idea
-*/**/.code
+.idea
+.code
 
 # venv
 venv
