@@ -1,6 +1,10 @@
-version: "3.3"
+version: "3"
 services:
   bot:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     env_file:
       - .env
     build:
