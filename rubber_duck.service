@@ -1,0 +1,16 @@
+[Unit]
+Description=Runs the hackerspace discord Rubber Duck Interpreter bot
+
+Wants=network.target
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=rubber_duck
+ExecStart=/home/rubber_duck/start_bot
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
