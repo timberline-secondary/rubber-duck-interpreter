@@ -72,10 +72,15 @@ class RubberDuck(discord.Client):
 
     async def on_ready(self):
         if self.reboot_id:
+            embedded = discord.Embed(title="Rubber Duck has been restarted! :white_check_mark:", color=0x2F3136)
+            embedded.set_author(name="Rubber Duck / Restarted",
+                                url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                                icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+            embedded.set_footer(text=f"Rubber Duck - Restarted @ {date.today()}")
             channel_id = int(self.reboot_id.split("-")[0])
             message_id = int(self.reboot_id.split("-")[1])
             message = await self.get_channel(channel_id).fetch_message(message_id)
-            await message.edit(content="Restarted!")
+            await message.edit(embed=embedded)
 
         await self.change_presence(
             activity=discord.Activity(type=discord.ActivityType.listening, name="your python | [>>]"))
@@ -165,12 +170,20 @@ class RubberDuck(discord.Client):
 
         elif command == "restart" or command == "rs":
             if message.author.id == 291050399509774340:
-                sent = await message.reply("Restarting...")
+                embedded = discord.Embed(title="Restarting...", color=0x2F3136)
+                embedded.set_author(name="Rubber Duck / Restarting", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                                    icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+                embedded.set_footer(text=f"Rubber Duck - Restarting... @ {date.today()}")
+                sent = await message.reply(embed=embedded)
                 reboot_id = f"{sent.channel.id}-{sent.id}"
                 await self.change_presence(status=discord.Status.do_not_disturb)
                 subprocess.check_output(["./reboot", reboot_id])
             else:
-                await message.reply(":warning: Insufficient Permissions!")
+                embedded = discord.Embed(title=":warning: Insufficient Permissions!", color=0x2F3136)
+                embedded.set_author(name="Rubber Duck / Restart", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                                    icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+                embedded.set_footer(text=f"Rubber Duck - Restart failed @ {date.today()}")
+                await message.reply(embed=embedded)
 
     def run(self):
         token = os.getenv("TOKEN")
