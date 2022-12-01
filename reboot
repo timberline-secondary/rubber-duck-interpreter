@@ -10,7 +10,7 @@ echo "## REBUILD IMAGE AND RESTARTING ##"
 docker-compose build --no-cache --build-arg REBOOT_ID=$1
 
 # (will be exited at this point, so restart it)
-docker container create --name rubber_duck_$1 -v /var/run/docker.sock:/var/run/docker.sock:ro --env-file .env rubber_duck-bot
+docker container create --name rubber_duck_$1 -v /var/run/docker.sock:/var/run/docker.sock:ro -e TOKEN=$2 rubber_duck-bot
 docker container start rubber_duck_$1
 
 docker container stop $(hostname)

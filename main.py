@@ -176,8 +176,9 @@ class RubberDuck(discord.Client):
                 embedded.set_footer(text=f"Rubber Duck - Restarting... @ {date.today()}")
                 sent = await message.reply(embed=embedded)
                 reboot_id = f"{sent.channel.id}-{sent.id}"
+                token = os.getenv("TOKEN")
                 await self.change_presence(status=discord.Status.do_not_disturb)
-                subprocess.check_output(["./reboot", reboot_id])
+                subprocess.check_output(["./reboot", reboot_id, token])
             else:
                 embedded = discord.Embed(title=":warning: Insufficient Permissions!", color=0x2F3136)
                 embedded.set_author(name="Rubber Duck / Restart", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
