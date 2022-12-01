@@ -171,7 +171,8 @@ class RubberDuck(discord.Client):
         elif command == "restart" or command == "rs":
             if message.author.id == 291050399509774340:
                 embedded = discord.Embed(title="Restarting...", color=0x2F3136)
-                embedded.set_author(name="Rubber Duck / Restarting", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                embedded.set_author(name="Rubber Duck / Restarting",
+                                    url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                                     icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
                 embedded.set_footer(text=f"Rubber Duck - Restarting... @ {date.today()}")
                 sent = await message.reply(embed=embedded)
@@ -181,10 +182,22 @@ class RubberDuck(discord.Client):
                 subprocess.check_output(["./reboot", reboot_id, token])
             else:
                 embedded = discord.Embed(title=":warning: Insufficient Permissions!", color=0x2F3136)
-                embedded.set_author(name="Rubber Duck / Restart", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                embedded.set_author(name="Rubber Duck / Restart",
+                                    url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                                     icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
                 embedded.set_footer(text=f"Rubber Duck - Restart failed @ {date.today()}")
                 await message.reply(embed=embedded)
+        elif command == "help":
+            embedded = discord.Embed(title="Commands", color=0x2F3136)
+            for command in commands:
+                embedded.add_field(name=command["name"],
+                                   value=f"{command['desc']}\naliases: {','.join(command['aliases'])}", inline=True)
+                embedded.add_field(name="\u200B", value="\u200B", inline=False)
+            embedded.add_field(name="Interpreter",
+                               value="To run the python interpreter prefix any python code (including code-blocks) with >> to run the interpreter\n\ni.e.: >> print('hello, world!')", inline=False)
+            embedded.set_author(name="Rubber Duck / Help", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                                icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+            embedded.set_footer(text=f"Rubber Duck - Help ・ {date.today()}")
 
     def run(self):
         token = os.getenv("TOKEN")
