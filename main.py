@@ -187,7 +187,7 @@ class RubberDuck(discord.Client):
                                     icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
                 embedded.set_footer(text=f"Rubber Duck - Restart failed @ {date.today()}")
                 await message.reply(embed=embedded)
-        elif command == "help":
+        elif command == "help" or command == "?":
             embedded = discord.Embed(title="Commands", color=0x2F3136)
             for command in commands:
                 embedded.add_field(name=command["name"],
