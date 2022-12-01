@@ -191,8 +191,7 @@ class RubberDuck(discord.Client):
             embedded = discord.Embed(title="Commands", color=0x2F3136)
             for command in commands:
                 embedded.add_field(name=command["name"],
-                                   value=f"{command['desc']}\naliases: {','.join(command['aliases'])}", inline=True)
-                embedded.add_field(name="\u200B", value="\u200B", inline=False)
+                                   value=f"aliases: {', '.join(command['aliases'])}\n{command['desc']}", inline=True)
             embedded.add_field(name="Interpreter",
                                value="To run the python interpreter prefix any python code (including code-blocks) with >> to run the interpreter\n\ni.e.: >> print('hello, world!')", inline=False)
             embedded.set_author(name="Rubber Duck / Help", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
