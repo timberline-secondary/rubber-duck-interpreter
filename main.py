@@ -198,6 +198,7 @@ class RubberDuck(discord.Client):
             embedded.set_author(name="Rubber Duck / Help", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                                 icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
             embedded.set_footer(text=f"Rubber Duck - Help ・ {date.today()}")
+            await message.reply(embed=embedded)
 
     def run(self):
         token = os.getenv("TOKEN")
