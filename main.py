@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from datetime import date, datetime, timedelta
 import humanize
 import os
@@ -67,8 +68,15 @@ class RubberDuck(discord.Client):
     def __init__(self, *, intents: Intents, **options: Any):
         super().__init__(intents=intents, **options)
         self.pool = ProcessPool(nodes=4)
+        self.reboot_id = os.getenv("REBOOT_ID")
 
     async def on_ready(self):
+        if self.reboot_id:
+            channel_id = int(self.reboot_id.split("-")[0])
+            message_id = int(self.reboot_id.split("-")[1])
+            message = await self.get_channel(channel_id).fetch_message(message_id)
+            await message.edit(content="Restarted!")
+
         await self.change_presence(
             activity=discord.Activity(type=discord.ActivityType.listening, name="your python | [>>]"))
         print(f"[{datetime.now()}] logged in as {self.user}")
@@ -120,32 +128,49 @@ class RubberDuck(discord.Client):
             await sent.edit(embed=embedded)
         elif content.startswith("<@1047186063606698016> "):
             command = content.replace("<@1047186063606698016> ", "")
+            await self.command(message, command)
 
-            if command == "version" or command == "stats" or command == "info":
-                _, _, load_15 = psutil.getloadavg()
-                average_usage = (load_15 / os.cpu_count()) * 100
+    async def command(self, message, command):
+        # for help command
+        commands = [
+            {"name": "stats", "aliases": ["stats", "info"], "desc": "Get statistics of Rubber Duck."},
+            {"name": "restart", "aliases": ["rs"], "desc": "Restart the docker instance."}
+        ]
 
-                embedded = discord.Embed(title="Rubber Duck / Info", color=0x2F3136)
-                embedded.add_field(name="\u200B",
-                                   value=f"Python version:\n`v{platform.python_version()}`",
-                                   inline=False)
-                embedded.add_field(name="\u200B",
-                                   value=f"Rubber Duck Version:\n`{get_git_info()}`",
-                                   inline=False)
-                embedded.add_field(name="\u200B",
-                                   value=f"Uptime:\n`{get_uptime()}`",
-                                   inline=False)
-                embedded.add_field(name="\u200B",
-                                   value=f"CPU usage (average):\n`{average_usage:.1f}%`",
-                                   inline=False)
-                embedded.add_field(name="\u200B",
-                                   value=f"RAM Used:\n`{(psutil.virtual_memory()[3] / 1000000000):.2f}GB ({psutil.virtual_memory()[2]:.1f}%)`",
-                                   inline=False)
-                embedded.set_author(name="Rubber Duck", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
-                                    icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
-                embedded.set_footer(text=f"Rubber Duck - Input from {message.author} ・ {date.today()}")
+        if command == "version" or command == "stats" or command == "info":
+            _, _, load_15 = psutil.getloadavg()
+            average_usage = (load_15 / os.cpu_count()) * 100
 
-                await message.reply(embed=embedded)
+            embedded = discord.Embed(title="Rubber Duck / Info", color=0x2F3136)
+            embedded.add_field(name="\u200B",
+                               value=f"Python version:\n`v{platform.python_version()}`",
+                               inline=True)
+            embedded.add_field(name="\u200B",
+                               value=f"Rubber Duck Version:\n`{get_git_info()}`",
+                               inline=True)
+            embedded.add_field(name="\u200B",
+                               value=f"Uptime:\n`{get_uptime()}`",
+                               inline=True)
+            embedded.add_field(name="\u200B",
+                               value=f"CPU usage (average):\n`{average_usage:.1f}%`",
+                               inline=True)
+            embedded.add_field(name="\u200B",
+                               value=f"RAM Used:\n`{(psutil.virtual_memory()[3] / 1000000000):.2f}GB ({psutil.virtual_memory()[2]:.1f}%)`",
+                               inline=True)
+            embedded.set_author(name="Rubber Duck", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                                icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+            embedded.set_footer(text=f"Rubber Duck - Input from {message.author} ・ {date.today()}")
+
+            await message.reply(embed=embedded)
+
+        elif command == "restart" or command == "rs":
+            if message.author.id == 291050399509774340:
+                sent = await message.reply("Restarting...")
+                reboot_id = f"{sent.channel.id}-{sent.id}"
+                await self.change_presence(status=discord.Status.do_not_disturb)
+                subprocess.check_output(["./reboot", reboot_id])
+            else:
+                await message.reply(":warning: Insufficient Permissions!")
 
     def run(self):
         token = os.getenv("TOKEN")
