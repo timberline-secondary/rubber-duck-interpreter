@@ -18,4 +18,4 @@ RUN chmod +x /usr/local/bin/docker-compose
 
 WORKDIR /root/rubber_duck
 
-CMD sh -c "python -m pip install -r requirements.txt && python main.py"
+CMD sh -c "python -m pip install -r requirements.txt && python -m pip install git+https://github.com/Pycord-Development/pycord && python main.py"
