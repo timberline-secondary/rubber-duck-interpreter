@@ -1,4 +1,2 @@
 - Put on hightower
 - better logging (i.e. save logs to a file based on date [folder per day containing logs.txt])
-- add ping command
-- add slash commands (https://stackoverflow.com/questions/71165431/how-do-i-make-a-working-slash-command-in-discord-py)
