@@ -299,12 +299,15 @@ async def help(ctx):
 
 @bot.bridge_command(aliases=["latency"], description="Sends the bot's latency.")
 async def ping(ctx):
+    # Define embed
     embedded = discord.Embed(title="Ping has been appreciated! :white_check_mark:", color=0x2F3136)
     embedded.set_author(name="Rubber Duck / Ping",
                         url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                         icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
     embedded.set_footer(text=f"Ping: {bot.latency:.2f}ms")
+    # Reply to message
     await ctx.reply(embed=embedded)
 
 
+# Run bot
 bot.run(os.getenv("TOKEN"))
