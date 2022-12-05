@@ -1,5 +1,6 @@
 multiprocess~=0.70.14
 discord~=2.1.0
+py-cord~=2.3.2
 RestrictedPython~=6.0
 pathos~=0.3.0
 python-dotenv~=0.21.0

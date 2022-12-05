@@ -6,14 +6,14 @@ import ast
 import platform
 import psutil
 import re
-from typing import Any, Tuple
+from typing import Tuple
 
 import multiprocess
 from pathos.multiprocessing import ProcessPool
 
 import dotenv
 import discord
-from discord.ext import commands
+from discord.ext import bridge
 import RestrictedPython
 from RestrictedPython import compile_restricted, limited_builtins, safe_builtins, utility_builtins
 from RestrictedPython.PrintCollector import PrintCollector
@@ -84,7 +84,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 # Create a Discord bot instance with the specified command prefix, intents, and no help command, to be overwritten by custom
-bot = commands.Bot(command_prefix="<@1047186063606698016> ", intents=intents, help_command=None)
+bot = bridge.Bot(command_prefix="<@1047186063606698016> ", intents=intents, help_command=None)
 
 # Load the ID of the message to be edited when the bot is restarted from the environment variables
 reboot_id = os.getenv("REBOOT_ID")
@@ -141,7 +141,7 @@ async def on_message(message):
         print(f"[{datetime.now()}] Executed {repr(source)}")
 
         # Send a message indicating that the code is running
-        sent = await message.channel.send(embed=discord.Embed(title="Running code...", color=0x2F3136))
+        sent = await message.reply(embed=discord.Embed(title="Running code...", color=0x2F3136))
 
         # Record the start time of the code execution
         start_compile = datetime.now()
@@ -188,7 +188,7 @@ async def on_message(message):
         await sent.edit(embed=embedded)
 
 
-@bot.command(aliases=["info", "version", "up", "uptime"])
+@bot.bridge_command(aliases=["stat", "info", "up"], description="Get statistics of Rubber Duck.")
 async def stats(ctx):
     # get the load average in the last 15 minutes
     _, _, load_15 = psutil.getloadavg()
@@ -225,7 +225,7 @@ async def stats(ctx):
     await ctx.reply(embed=embedded)
 
 
-@bot.command(aliases=["rs"])
+@bot.bridge_command(aliases=["rs"], description="Restart the docker instance.")
 async def restart(ctx):
 
     # Check if the user who triggered the command has the correct ID
@@ -264,13 +264,13 @@ async def restart(ctx):
         await ctx.reply(embed=embedded)
 
 
-@bot.command(aliases=["?", "??"])
+@bot.bridge_command(aliases=["?", "??"], description="Sends all the available commands for the bot.")
 async def help(ctx):
 
     # Define a list of available commands
     command_list = [
-        {"name": "stats", "aliases": ["stats", "info"], "desc": "Get statistics of Rubber Duck."},
-        {"name": "restart", "aliases": ["rs"], "desc": "Restart the docker instance."}
+        {"name": "stats", "aliases": ["stat", "info", "up"], "desc": "Get statistics of Rubber Duck."},
+        {"name": "restart", "aliases": ["rs"], "desc": "Restart the docker instance."}, {"name": "ping", "aliases": ["latency"], "desc": "Sends the bot's latency."}
     ]
 
     # Create an embedded message with the title "Commands"
@@ -294,6 +294,16 @@ async def help(ctx):
     embedded.set_footer(text=f"Rubber Duck - Help ・ {date.today()}")
 
     # Send the message
+    await ctx.reply(embed=embedded)
+
+
+@bot.bridge_command(aliases=["latency"], description="Sends the bot's latency.")
+async def ping(ctx):
+    embedded = discord.Embed(title="Ping has been appreciated! :white_check_mark:", color=0x2F3136)
+    embedded.set_author(name="Rubber Duck / Ping",
+                        url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
+                        icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
+    embedded.set_footer(text=f"Ping: {bot.latency:.2f}ms")
     await ctx.reply(embed=embedded)
 
 
