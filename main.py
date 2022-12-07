@@ -229,7 +229,7 @@ async def stats(ctx):
 async def restart(ctx):
 
     # Check if the user who triggered the command has the correct ID
-    if ctx.author.id == 291050399509774340:
+    if ctx.author.id == 291050399509774340 or ctx.author.id == 318811766656204830:
 
         # Create an embedded message with the text "Restarting..."
         embedded = discord.Embed(title="Restarting...", color=0x2F3136)
