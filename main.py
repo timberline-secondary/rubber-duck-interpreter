@@ -24,6 +24,15 @@ dotenv.load_dotenv()
 # Record the time at which the script was started
 load_start_delta = datetime.now()
 
+_SAFE_MODULES = frozenset(("math", "numpy", "requests",
+                          "pillow", "asyncio", "pygame", "scipy", "pandas", "torch"))
+
+
+def _safe_import(name, *args, **kwargs):
+    if name not in _SAFE_MODULES:
+        raise Exception(f"{name} is not a supported module.")
+    return __import__(name, *args, **kwargs)
+
 
 def get_uptime() -> str:
     """Calculate and return the uptime of the script"""
@@ -56,7 +65,8 @@ def interpret(code: str) -> Tuple[str, str]:
             "all": all,
             "any": any,
             "_getiter_": RestrictedPython.Eval.default_guarded_getiter,
-            "_iter_unpack_sequence_": RestrictedPython.Guards.guarded_iter_unpack_sequence
+            "_iter_unpack_sequence_": RestrictedPython.Guards.guarded_iter_unpack_sequence,
+            "__import__": _safe_import
         },
         "_getattr_": RestrictedPython.Guards.safer_getattr
     }
@@ -71,10 +81,12 @@ def interpret(code: str) -> Tuple[str, str]:
 def get_git_info() -> str:
     """Get the latest git commit hash and branch and return them as a string"""
     # Get the latest commit hash
-    last_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True)[:8]
+    last_commit = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], text=True)[:8]
 
     # Get the current branch
-    current_branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True)
+    current_branch = subprocess.check_output(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True)
 
     # Return the commit hash and branch as a string
     return f"{last_commit} @ {current_branch}"
@@ -84,7 +96,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 # Create a Discord bot instance with the specified command prefix, intents, and no help command, to be overwritten by custom
-bot = bridge.Bot(command_prefix="<@1047186063606698016> ", intents=intents, help_command=None)
+bot = bridge.Bot(command_prefix="<@1047186063606698016> ",
+                 intents=intents, help_command=None)
 
 # Load the ID of the message to be edited when the bot is restarted from the environment variables
 reboot_id = os.getenv("REBOOT_ID")
@@ -99,7 +112,8 @@ async def on_ready():
     # If a reboot ID was specified, edit the message with the specified ID
     if reboot_id:
         # Create an embedded message
-        embedded = discord.Embed(title="Rubber Duck has been restarted! :white_check_mark:", color=0x2F3136)
+        embedded = discord.Embed(
+            title="Rubber Duck has been restarted! :white_check_mark:", color=0x2F3136)
         embedded.set_author(name="Rubber Duck / Restarted",
                             url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                             icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
@@ -147,12 +161,14 @@ async def on_message(message):
         start_compile = datetime.now()
 
         # Create an embedded message to display the code output
-        embedded = discord.Embed(title="Rubber Duck / Interpret", color=0x2F3136)
+        embedded = discord.Embed(
+            title="Rubber Duck / Interpret", color=0x2F3136)
         embedded.set_author(name="Rubber Duck", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                             icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
 
         # Add the user and the current date to the footer of the embedded message
-        embedded.set_footer(text=f"Rubber Duck - Input from {message.author} ・ {date.today()}")
+        embedded.set_footer(
+            text=f"Rubber Duck - Input from {message.author} ・ {date.today()}")
 
         # Execute the code in a separate process
         result = pool.apipe(interpret, source)
@@ -178,7 +194,8 @@ async def on_message(message):
                            value=f"Input:\n```python\n{source}```",
                            inline=False)
         embedded.add_field(name="\u200B",
-                           value="Output:\n```python\n{}```".format(output or "(no output to stdout)"),
+                           value="Output:\n```python\n{}```".format(
+                               output or "(no output to stdout)"),
                            inline=False)
         embedded.add_field(name="\u200B",
                            value=f"took {elapsed_time}",
@@ -219,7 +236,8 @@ async def stats(ctx):
     # set the author and footer of the embedding
     embedded.set_author(name="Rubber Duck", url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                         icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
-    embedded.set_footer(text=f"Rubber Duck - Input from {ctx.author} ・ {date.today()}")
+    embedded.set_footer(
+        text=f"Rubber Duck - Input from {ctx.author} ・ {date.today()}")
 
     # send the embedding as a reply to the original command
     await ctx.reply(embed=embedded)
@@ -238,7 +256,8 @@ async def restart(ctx):
         embedded.set_author(name="Rubber Duck / Restarting",
                             url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                             icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
-        embedded.set_footer(text=f"Rubber Duck - Restarting... @ {date.today()}")
+        embedded.set_footer(
+            text=f"Rubber Duck - Restarting... @ {date.today()}")
 
         # Send the message
         sent = await ctx.reply(embed=embedded)
@@ -256,11 +275,13 @@ async def restart(ctx):
         subprocess.check_output(["./reboot", reboot_id, token])
     else:
         # If the user does not have the correct ID, send an error message
-        embedded = discord.Embed(title=":warning: Insufficient Permissions!", color=0x2F3136)
+        embedded = discord.Embed(
+            title=":warning: Insufficient Permissions!", color=0x2F3136)
         embedded.set_author(name="Rubber Duck / Restart",
                             url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                             icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
-        embedded.set_footer(text=f"Rubber Duck - Restart failed @ {date.today()}")
+        embedded.set_footer(
+            text=f"Rubber Duck - Restart failed @ {date.today()}")
         await ctx.reply(embed=embedded)
 
 
@@ -269,8 +290,10 @@ async def help(ctx):
 
     # Define a list of available commands
     command_list = [
-        {"name": "stats", "aliases": ["stat", "info", "up"], "desc": "Get statistics of Rubber Duck."},
-        {"name": "restart", "aliases": ["rs"], "desc": "Restart the docker instance."}, {"name": "ping", "aliases": ["latency"], "desc": "Sends the bot's latency."}
+        {"name": "stats", "aliases": [
+            "stat", "info", "up"], "desc": "Get statistics of Rubber Duck."},
+        {"name": "restart", "aliases": ["rs"], "desc": "Restart the docker instance."}, {
+            "name": "ping", "aliases": ["latency"], "desc": "Sends the bot's latency."}
     ]
 
     # Create an embedded message with the title "Commands"
@@ -300,7 +323,8 @@ async def help(ctx):
 @bot.bridge_command(aliases=["latency"], description="Sends the bot's latency.")
 async def ping(ctx):
     # Define embed
-    embedded = discord.Embed(title="Ping has been appreciated! :white_check_mark:", color=0x2F3136)
+    embedded = discord.Embed(
+        title="Ping has been appreciated! :white_check_mark:", color=0x2F3136)
     embedded.set_author(name="Rubber Duck / Ping",
                         url="https://en.wikipedia.org/wiki/Rubber_duck_debugging",
                         icon_url="https://cdn.discordapp.com/avatars/1047186063606698016/5f73a9caae675ae8d403adaab8f50a8e.webp?size=64")
