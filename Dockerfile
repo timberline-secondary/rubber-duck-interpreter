@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.11
 
 RUN git clone https://github.com/timberline-secondary/rubber-duck-interpreter /root/rubber_duck
 
