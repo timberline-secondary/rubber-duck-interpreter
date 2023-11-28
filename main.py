@@ -24,10 +24,12 @@ dotenv.load_dotenv()
 # Record the time at which the script was started
 load_start_delta = datetime.now()
 
+# list of supported modules (refer to requirements.txt)
 _SAFE_MODULES = frozenset(("math", "numpy", "requests",
-                          "pillow", "asyncio", "pygame", "scipy", "pandas", "torch"))
+                          "pillow", "asyncio", "pygame", "scipy", "pandas"))
 
 
+# function for calling __import__ in the safe environment
 def _safe_import(name, *args, **kwargs):
     if name not in _SAFE_MODULES:
         raise Exception(f"{name} is not a supported module.")
