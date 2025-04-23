@@ -12,3 +12,4 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs:/root/rubber_duck/logs

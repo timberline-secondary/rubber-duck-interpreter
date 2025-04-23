@@ -1,6 +1,7 @@
 FROM python:3.11
 
 RUN git clone https://github.com/timberline-secondary/rubber-duck-interpreter /root/rubber_duck
+# COPY . /root/rubber_duck
 
 ARG REBOOT_ID
 
@@ -8,6 +9,7 @@ RUN echo "${TOKEN}" >> /root/rubber_duck/.env
 RUN echo "REBOOT_ID=${REBOOT_ID}" >> /root/rubber_duck/.env
 
 ENV DOCKER_VERSION='20.10.20'
+ENV PYTHONUNBUFFERED=1
 
 RUN set -ex \
     && DOCKER_FILENAME=https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz \

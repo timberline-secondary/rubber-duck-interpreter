@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo -e "\n### FINDING CURRENTLY RUNNING CONTAINER ###\n"
+CONTAINER_ID=$(docker ps -q --filter "ancestor=rubber_duck-bot")
+
+if [ -n "$CONTAINER_ID" ]; then
+    echo -e "Stopping container: $CONTAINER_ID\n"
+    docker stop "$CONTAINER_ID"
+    echo -e "Removing container: $CONTAINER_ID\n"
+    docker rm "$CONTAINER_ID"
+else
+    echo -e "No running container found for rubber_duck-bot.\n"
+fi
+
+echo -e "\n### REMOVING DANGLING IMAGES ###\n"
+docker rmi --force $(docker images -f "dangling=true" -q)
+
+echo -e "\n### REMOVING EXITED CONTAINERS ###\n"
+docker rm $(docker ps -a -f status=exited -f status=created -q)
+
+echo -e "\n### CLEANUP COMPLETE ###\n"
